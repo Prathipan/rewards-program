@@ -22,7 +22,13 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "no-console": ["warn", { "allow": ["warn", "error", "info", "debug"] }],
+      "react/prop-types": "error",
+      "no-var": "error",
+      "prefer-const": "error"
+    }
   },
   "browserslist": {
     "production": [
