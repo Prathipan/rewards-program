@@ -28,20 +28,27 @@ Project Structure
 ```
 rewards-program/
   public/
-    transactions.json                # Data source fetched by the app
+    transactions.json                # Original dataset
+    transactions-extended.json       # Extended dataset used by the app
   src/
     components/
       LoadingSpinner.js
       MonthlyRewardsTable.js
       TotalRewardsTable.js
       TransactionList.js
+      RewardsInfo.js
+      ErrorBoundary.js
       __tests__/components.test.js   # Basic component tests
+      __tests__/rewardsInfo.test.js  # RewardsInfo unit test
+      __tests__/errorBoundary.test.js# ErrorBoundary unit test
     data/
-      service.js                     # Fetches /transactions.json
+      service.js                     # Fetches /transactions-extended.json
+      service.test.js                # Service unit tests
     utils/
       rewardsCalculation.js          # Pure calculation + sorting helpers
       logger.js                      # Minimal logger wrapper
       __tests__/rewardsCalculation.test.js
+      __tests__/rewardsCalculation.validation.test.js
   docs/
     screenshots/                     # Place screenshots here
 ```
@@ -73,10 +80,48 @@ npm start
 ```bash
 npm test -- --watchAll=false
 ```
+Or run with a single worker to avoid OOM on some systems:
+```bash
+npm test -- --watchAll=false -w=1
+```
+
+**Additional Test Commands:**
+```bash
+# Run tests in watch mode (interactive)
+npm test
+
+# Run tests with coverage report
+npm test -- --coverage --watchAll=false
+
+# Run specific test file
+npm test -- --testPathPattern=rewardsCalculation.test.js --watchAll=false
+
+# Run tests with verbose output
+npm test -- --verbose --watchAll=false
+
+# Run tests silently (no console output)
+npm test -- --silent --watchAll=false
+```
 4) Lint
 ```bash
 npx eslint src --ext .js,.jsx
 ```
+
+Formatting
+----------
+This repo includes Prettier and EditorConfig. To format all files:
+```bash
+npm run format
+```
+
+Unit Test Coverage and Screenshots
+----------------------------------
+After running tests, capture a screenshot of the terminal showing passing tests and place it under `docs/screenshots/`.
+
+- Test run results
+  - `docs/screenshots/tests-pass.png`
+  
+  ![Tests passing](docs/screenshots/tests-pass.png)
 
 Screenshots
 -----------

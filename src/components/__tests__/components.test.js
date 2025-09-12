@@ -1,8 +1,15 @@
-import React from 'react';
+
 import { render, screen } from '@testing-library/react';
-import MonthlyRewardsTable from '../../components/MonthlyRewardsTable';
-import TotalRewardsTable from '../../components/TotalRewardsTable';
-import TransactionList from '../../components/TransactionList';
+import MonthlyRewardsTable from '../../components/tables/MonthlyRewardsTable';
+import TotalRewardsTable from '../../components/tables/TotalRewardsTable';
+import TransactionList from '../../components/tables/TransactionList';
+
+// Mock the FilterBar component
+jest.mock('../../components/FilterBar', () => {
+  return function MockFilterBar() {
+    return <div data-testid="filter-bar">Filter Bar Mock</div>;
+  };
+});
 
 const transactions = [
   { id: 1, customerId: 1, customerName: 'John Doe', amount: 120.2, date: '2023-12-15', product: 'Electronics' },
@@ -32,6 +39,23 @@ describe('Components render basic structures', () => {
     render(<TransactionList transactions={transactions} />);
     expect(screen.getByText('Transactions')).toBeInTheDocument();
     expect(screen.getByText('Reward Points')).toBeInTheDocument();
+  });
+});
+
+describe('Components render filter bars', () => {
+  test('MonthlyRewardsTable renders filter bar', () => {
+    render(<MonthlyRewardsTable transactions={transactions} customers={customers} />);
+    expect(screen.getByTestId('filter-bar')).toBeInTheDocument();
+  });
+
+  test('TotalRewardsTable renders filter bar', () => {
+    render(<TotalRewardsTable transactions={transactions} customers={customers} />);
+    expect(screen.getByTestId('filter-bar')).toBeInTheDocument();
+  });
+
+  test('TransactionList renders filter bar', () => {
+    render(<TransactionList transactions={transactions} />);
+    expect(screen.getByTestId('filter-bar')).toBeInTheDocument();
   });
 });
 

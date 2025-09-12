@@ -3,10 +3,12 @@ import "./App.css";
 import { fetchTransactions } from "./data/service";
 import { getUniqueCustomers } from "./utils/rewardsCalculation";
 import { logApiStart, logApiSuccess, logApiError } from "./utils/logger";
-import MonthlyRewardsTable from "./components/MonthlyRewardsTable";
-import TotalRewardsTable from "./components/TotalRewardsTable";
-import TransactionList from "./components/TransactionList";
+import MonthlyRewardsTable from "./components/tables/MonthlyRewardsTable";
+import TotalRewardsTable from "./components/tables/TotalRewardsTable";
+import TransactionList from "./components/tables/TransactionList";
 import LoadingSpinner from "./components/LoadingSpinner";
+import RewardsInfo from "./components/RewardsInfo";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function App() {
   const [appState, setAppState] = useState({
@@ -98,24 +100,18 @@ function App() {
       </header>
 
       <main className="app-main">
-        <div className="rewards-info">
-          <h3>Rewards Program Rules</h3>
-          <ul>
-            <li>2 points for every dollar spent over $100</li>
-            <li>1 point for every dollar spent between $50-$100</li>
-            <li>No points for purchases under $50</li>
-            <li>Decimal amounts are handled using floor function</li>
-          </ul>
-        </div>
+        <ErrorBoundary>
+          <RewardsInfo />
 
-        <MonthlyRewardsTable
-          transactions={transactions}
-          customers={customers}
-        />
+          <MonthlyRewardsTable
+            transactions={transactions}
+            customers={customers}
+          />
 
-        <TotalRewardsTable transactions={transactions} customers={customers} />
+          <TotalRewardsTable transactions={transactions} customers={customers} />
 
-        <TransactionList transactions={transactions} />
+          <TransactionList transactions={transactions} />
+        </ErrorBoundary>
       </main>
     </div>
   );
