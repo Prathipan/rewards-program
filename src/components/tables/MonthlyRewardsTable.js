@@ -1,28 +1,36 @@
 import React, { useState, useMemo } from 'react';
+import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
-import { generateMonthlyRewardsData, filterMonthlyRewardsByName } from '../../utils/rewardsCalculation';
+import { generateMonthlyRewardsData, filterMonthlyRewardsByName, filterTransactions } from '../../utils/rewardsCalculation';
 import DataGridTable from '../DataGridTable';
 import FilterBar from '../FilterBar';
 
 const MonthlyRewardsTable = ({ transactions, customers }) => {
   const [nameFilter, setNameFilter] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(null); // Dayjs object or null
+  const [endDate, setEndDate] = useState(null); // Dayjs object or null
 
+  // Filter transactions by name and date first
+  const filteredTransactions = useMemo(() => {
+    return filterTransactions(
+      transactions,
+      nameFilter,
+      startDate ? startDate.format('YYYY-MM-DD') : '',
+      endDate ? endDate.format('YYYY-MM-DD') : ''
+    );
+  }, [transactions, nameFilter, startDate, endDate]);
+
+  // Generate monthly rewards data from filtered transactions
   const monthlyRewardsData = useMemo(() => {
-    return generateMonthlyRewardsData(transactions, customers);
-  }, [transactions, customers]);
-
-  const filteredMonthlyRewardsData = useMemo(() => {
-    return filterMonthlyRewardsByName(monthlyRewardsData, nameFilter);
-  }, [monthlyRewardsData, nameFilter]);
+    return generateMonthlyRewardsData(filteredTransactions, customers);
+  }, [filteredTransactions, customers]);
 
   const columns = [
     { key: 'customerId', header: 'Customer ID', headerClassName: undefined, cellClassName: 'customer-id', sortable: true },
     { key: 'name', header: 'Name', cellClassName: 'customer-name', sortable: true },
     { key: 'month', header: 'Month', cellClassName: 'month-cell', sortable: true },
     { key: 'year', header: 'Year', cellClassName: 'year-cell', sortable: true },
-    { key: 'rewardPoints', header: 'Reward Points', cellClassName: 'points-cell', sortable: true, sortAccessor: (r) => r.rewardPoints, render: (r) => r.rewardPoints }
+    { key: 'rewardPoints', header: 'Reward Points', cellClassName: 'points-cell', sortable: true, render: (r) => r.rewardPoints }
   ];
 
   return (
@@ -35,14 +43,14 @@ const MonthlyRewardsTable = ({ transactions, customers }) => {
         onStartDateChange={setStartDate}
         endDate={endDate}
         onEndDateChange={setEndDate}
-        showDateRange={false}
+        showDateRange={true}
         placeholder="Search by customer name..."
       />
       <div className="table-wrapper">
         <DataGridTable
           className="rewards-table"
           columns={columns}
-          data={filteredMonthlyRewardsData}
+          data={monthlyRewardsData}
           getRowKey={(r) => `${r.customerId}-${r.month}-${r.year}`}
           pageSize={10}
           initialSort={{ key: 'year', direction: 'desc' }}

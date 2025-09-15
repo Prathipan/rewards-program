@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import "./App.css";
 import { fetchTransactions } from "./data/service";
 import { getUniqueCustomers } from "./utils/rewardsCalculation";
@@ -94,26 +96,28 @@ function App() {
   }
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Customer Rewards Program</h1>
-      </header>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <div className="app">
+        <header className="app-header">
+          <h1>Customer Rewards Program</h1>
+        </header>
 
-      <main className="app-main">
-        <ErrorBoundary>
-          <RewardsInfo />
+        <main className="app-main">
+          <ErrorBoundary>
+            <RewardsInfo />
 
-          <MonthlyRewardsTable
-            transactions={transactions}
-            customers={customers}
-          />
+            <MonthlyRewardsTable
+              transactions={transactions}
+              customers={customers}
+            />
 
-          <TotalRewardsTable transactions={transactions} customers={customers} />
+            <TotalRewardsTable transactions={transactions} customers={customers} />
 
-          <TransactionList transactions={transactions} />
-        </ErrorBoundary>
-      </main>
-    </div>
+            <TransactionList transactions={transactions} />
+          </ErrorBoundary>
+        </main>
+      </div>
+    </LocalizationProvider>
   );
 }
 

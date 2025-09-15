@@ -20,7 +20,7 @@ const TotalRewardsTable = ({ transactions, customers }) => {
 
   const columns = [
     { key: 'customerName', header: 'Customer Name', headerClassName: undefined, cellClassName: 'customer-name', sortable: true },
-    { key: 'rewardPoints', header: 'Reward Points', cellClassName: 'points-cell total-points', sortable: true, sortAccessor: (r) => r.rewardPoints, render: (r) => r.rewardPoints }
+    { key: 'rewardPoints', header: 'Reward Points', cellClassName: 'points-cell total-points', sortable: true, render: (r) => r.rewardPoints }
   ];
 
   return (
