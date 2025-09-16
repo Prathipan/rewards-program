@@ -17,6 +17,28 @@ const DataGridTable = ({
     headerClassName: col.headerClassName,
     cellClassName: col.cellClassName,
     sortable: col.sortable !== false,
+    sortComparator: col.sortComparator || (col.sortAccessor 
+      ? (v1, v2, param1, param2) => {
+          try {
+            const row1 = param1.api.getRow(param1.id);
+            const row2 = param2.api.getRow(param2.id);
+            const value1 = col.sortAccessor(row1 || {});
+            const value2 = col.sortAccessor(row2 || {});
+            
+            if (typeof value1 === 'number' && typeof value2 === 'number') {
+              return value1 - value2;
+            }
+            if (typeof value1 === 'string' && typeof value2 === 'string') {
+              return value1.localeCompare(value2);
+            }
+            if (value1 < value2) return -1;
+            if (value1 > value2) return 1;
+            return 0;
+          } catch (e) {
+            return 0;
+          }
+        }
+      : undefined),
     valueGetter: col.sortAccessor
       ? (params) => {
           const row = params && params.row ? params.row : undefined;

@@ -11,6 +11,7 @@ const format = (level, message, meta) => ({
 const emit = (payload) => {
   // In production, this could POST to a logging service
   if (!isProduction) {
+    // eslint-disable-next-line no-console
     console[levelToConsole[payload.level]](payload);
   }
 };

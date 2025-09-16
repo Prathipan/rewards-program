@@ -1,12 +1,15 @@
-import React, { useState, useMemo } from 'react';
-import dayjs from 'dayjs';
-import PropTypes from 'prop-types';
-import { generateMonthlyRewardsData, filterMonthlyRewardsByName, filterTransactions } from '../../utils/rewardsCalculation';
-import DataGridTable from '../DataGridTable';
-import FilterBar from '../FilterBar';
+import React, { useState, useMemo } from "react";
+
+import PropTypes from "prop-types";
+import {
+  generateMonthlyRewardsData,
+  filterTransactions,
+} from "../../utils/rewardsCalculation";
+import DataGridTable from "../DataGridTable";
+import FilterBar from "../FilterBar";
 
 const MonthlyRewardsTable = ({ transactions, customers }) => {
-  const [nameFilter, setNameFilter] = useState('');
+  const [nameFilter, setNameFilter] = useState("");
   const [startDate, setStartDate] = useState(null); // Dayjs object or null
   const [endDate, setEndDate] = useState(null); // Dayjs object or null
 
@@ -15,8 +18,8 @@ const MonthlyRewardsTable = ({ transactions, customers }) => {
     return filterTransactions(
       transactions,
       nameFilter,
-      startDate ? startDate.format('YYYY-MM-DD') : '',
-      endDate ? endDate.format('YYYY-MM-DD') : ''
+      startDate ? startDate.format("YYYY-MM-DD") : "",
+      endDate ? endDate.format("YYYY-MM-DD") : ""
     );
   }, [transactions, nameFilter, startDate, endDate]);
 
@@ -26,16 +29,51 @@ const MonthlyRewardsTable = ({ transactions, customers }) => {
   }, [filteredTransactions, customers]);
 
   const columns = [
-    { key: 'customerId', header: 'Customer ID', headerClassName: undefined, cellClassName: 'customer-id', sortable: true },
-    { key: 'name', header: 'Name', cellClassName: 'customer-name', sortable: true },
     {
-      key: 'monthYear',
-      header: 'Month',
-      cellClassName: 'month-cell',
+      key: "customerId",
+      header: "Customer ID",
+      headerClassName: undefined,
+      cellClassName: "customer-id",
       sortable: true,
-      render: (r) => `${r.month} ${r.year}`
     },
-    { key: 'rewardPoints', header: 'Reward Points', cellClassName: 'points-cell', sortable: true, render: (r) => r.rewardPoints }
+    {
+      key: "name",
+      header: "Name",
+      cellClassName: "customer-name",
+      sortable: true,
+    },
+    {
+      key: "monthYear",
+      header: "Month",
+      cellClassName: "month-cell",
+      sortable: true,
+      render: (r) => `${r.month} ${r.year}`,
+      sortAccessor: (r) => {
+        const monthNames = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        const monthIndex = monthNames.indexOf(r.month);
+        return r.year * 100 + (monthIndex + 1);
+      },
+    },
+    {
+      key: "rewardPoints",
+      header: "Reward Points",
+      cellClassName: "points-cell",
+      sortable: true,
+      render: (r) => r.rewardPoints,
+    },
   ];
 
   return (
@@ -58,7 +96,7 @@ const MonthlyRewardsTable = ({ transactions, customers }) => {
           data={monthlyRewardsData}
           getRowKey={(r) => `${r.customerId}-${r.month}-${r.year}`}
           pageSize={10}
-          initialSort={{ key: 'year', direction: 'desc' }}
+          initialSort={{ key: "year", direction: "desc" }}
         />
       </div>
     </div>
@@ -66,18 +104,22 @@ const MonthlyRewardsTable = ({ transactions, customers }) => {
 };
 
 MonthlyRewardsTable.propTypes = {
-  transactions: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    customerId: PropTypes.number.isRequired,
-    customerName: PropTypes.string.isRequired,
-    amount: PropTypes.number.isRequired,
-    date: PropTypes.string.isRequired,
-    product: PropTypes.string.isRequired
-  })).isRequired,
-  customers: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired
-  })).isRequired
+  transactions: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      customerId: PropTypes.number.isRequired,
+      customerName: PropTypes.string.isRequired,
+      amount: PropTypes.number.isRequired,
+      date: PropTypes.string.isRequired,
+      product: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  customers: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default MonthlyRewardsTable;
