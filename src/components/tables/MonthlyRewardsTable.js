@@ -4,29 +4,37 @@ import PropTypes from "prop-types";
 import {
   generateMonthlyRewardsData,
   filterTransactions,
+  filterMonthlyRewardsByName,
 } from "../../utils/rewardsCalculation";
 import DataGridTable from "../DataGridTable";
 import FilterBar from "../FilterBar";
 
 const MonthlyRewardsTable = ({ transactions, customers }) => {
   const [nameFilter, setNameFilter] = useState("");
-  const [startDate, setStartDate] = useState(null); // Dayjs object or null
-  const [endDate, setEndDate] = useState(null); // Dayjs object or null
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null); 
 
-  // Filter transactions by name and date first
-  const filteredTransactions = useMemo(() => {
+
+  // Filter transactions by date only (not by name)
+  const dateFilteredTransactions = useMemo(() => {
     return filterTransactions(
       transactions,
-      nameFilter,
+      "", 
       startDate ? startDate.format("YYYY-MM-DD") : "",
       endDate ? endDate.format("YYYY-MM-DD") : ""
     );
-  }, [transactions, nameFilter, startDate, endDate]);
+  }, [transactions, startDate, endDate]);
 
-  // Generate monthly rewards data from filtered transactions
+  // Generate monthly rewards data from date-filtered transactions
+  const unfilteredMonthlyRewardsData = useMemo(() => {
+    return generateMonthlyRewardsData(dateFilteredTransactions, customers);
+  }, [dateFilteredTransactions, customers]);
+
+  //  Filter the monthly rewards data by name
   const monthlyRewardsData = useMemo(() => {
-    return generateMonthlyRewardsData(filteredTransactions, customers);
-  }, [filteredTransactions, customers]);
+    return filterMonthlyRewardsByName(unfilteredMonthlyRewardsData, nameFilter);
+  }, [unfilteredMonthlyRewardsData, nameFilter]);
+
 
   const columns = [
     {
@@ -41,6 +49,10 @@ const MonthlyRewardsTable = ({ transactions, customers }) => {
       header: "Name",
       cellClassName: "customer-name",
       sortable: true,
+      render : (r)=> r.name,
+      sortAccessor: (r) => {
+        return r.name?.toLowerCase() || "";
+      }
     },
     {
       key: "monthYear",
