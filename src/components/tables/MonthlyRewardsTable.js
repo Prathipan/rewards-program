@@ -28,8 +28,13 @@ const MonthlyRewardsTable = ({ transactions, customers }) => {
   const columns = [
     { key: 'customerId', header: 'Customer ID', headerClassName: undefined, cellClassName: 'customer-id', sortable: true },
     { key: 'name', header: 'Name', cellClassName: 'customer-name', sortable: true },
-    { key: 'month', header: 'Month', cellClassName: 'month-cell', sortable: true },
-    { key: 'year', header: 'Year', cellClassName: 'year-cell', sortable: true },
+    {
+      key: 'monthYear',
+      header: 'Month',
+      cellClassName: 'month-cell',
+      sortable: true,
+      render: (r) => `${r.month} ${r.year}`
+    },
     { key: 'rewardPoints', header: 'Reward Points', cellClassName: 'points-cell', sortable: true, render: (r) => r.rewardPoints }
   ];
 
